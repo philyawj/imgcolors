@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Color
+from django.utils import timezone
 
 
 def index(request):
@@ -9,7 +10,9 @@ def index(request):
 
         color = Color()
         color.image = request.FILES['image']
+        color.filename = request.FILES['image'].name
         print(color)
+        color.save()
         # print(filename)
 
         # get the px dimensions
