@@ -15,10 +15,3 @@ python manage.py runserver
 python manage.py startapp colors
 
 pip install Pillow
-
-python manage.py collectstatic
-
-# TODO
-
-setup django admin super user
-create a db entry every time someone runs the color analysis with the timestamp and name of file.

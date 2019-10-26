@@ -14,25 +14,16 @@
         type="file"
         class="custom-file-input"
         name="image"
-        id="inputGroupFile01"
+        id="imageInput"
         aria-describedby="inputGroupFileAddon01"
       />
-      <label class="custom-file-label" for="inputGroupFile01"
-        >Choose file</label
-      >
+      <label class="custom-file-label" for="imageInput">Choose file</label>
     </div>
   </div>
   <input class="btn btn-dark" type="submit" value="Submit" />
 </form>
 
-<!-- {% for image in images.all %}
-<h1>image here</h1>
-<h3>{{ image.id }}</h3>
-<img class="img-fluid" width="800" src={{ image.image.url }}></img>
-{% endfor %}  -->
-
 {% if just_saved_image %}
-<p>yo, you just saved an image!</p>
 <p>image id: {{ just_saved_image.id }}</p>
 <p>image name: {{ just_saved_image.filename }}</p>
 <p>image created_at: {{ just_saved_image.created_at }}</p>
