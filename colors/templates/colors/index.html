@@ -34,6 +34,8 @@
 {% if just_saved_image %}
 <p>yo, you just saved an image!</p>
 <p>image id: {{ just_saved_image.id }}</p>
+<p>image name: {{ just_saved_image.filename }}</p>
+<p>image created_at: {{ just_saved_image.created_at }}</p>
 <img
   class="img-fluid"
   width="800"
