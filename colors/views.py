@@ -29,4 +29,7 @@ def index(request):
             print('no image')
             return render(request, 'colors/index.html', {'error': 'You must add an image.'})
 
-    return render(request, 'colors/index.html')
+    # temporarily loop all images in db
+    images = Color.objects
+
+    return render(request, 'colors/index.html', {'images': images})

@@ -25,4 +25,7 @@
   <input class="btn btn-dark" type="submit" value="Submit" />
 </form>
 
-{% endblock %}
+{% for image in images.all %}
+<h1>image here</h1>
+<img class="img-fluid" width="800" src={{ image.image.url }}></img>
+{% endfor %} {% endblock %}
