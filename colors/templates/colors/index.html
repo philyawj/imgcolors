@@ -6,8 +6,6 @@
 
 <h1>HOME</h1>
 
-<h2>the filename was {{ filename }}</h2>
-
 <form method="POST" action="{% url 'index' %}" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="input-group mb-3">
