@@ -15,3 +15,5 @@ python manage.py runserver
 python manage.py startapp colors
 
 pip install Pillow
+
+pip install opencv-python
