@@ -4,35 +4,31 @@ from django.utils import timezone
 
 
 def index(request):
+    # TODO add an input dropdown between 3-7 with default 5
+    # default to just_saved_image empty
     just_saved_image = None
+
     if request.method == 'POST':
-        # if file exists process it and save to db
+        # if file exists: process it and save to db
         if request.FILES:
 
-            color = Color()
-            color.image = request.FILES['image']
-            color.filename = request.FILES['image'].name
-            color.save()
-            # returns the id of image just saved
-            print(color.id)
+            image = Color()
+            image.image = request.FILES['image']
+            image.filename = request.FILES['image'].name
+            image.save()
 
-            # need to find a way to return just the object with that id
-            just_saved_image = Color.objects.get(pk=color.id)
-            print(just_saved_image)
+            # create object queried from id of just saved image
+            just_saved_image = Color.objects.get(pk=image.id)
 
             # get the px dimensions
             # resize a thumbnail to a smaller image
             # analyze the colors
             # save an img file
-            # calculate the hex values
+            # calculate the hex values + front end show circles
             # return back to homepage and display the img and hexes
 
-        # if file doesn't exist, return error message
+        # if file doesn't exist: return error message
         else:
-            just_saved_image = None
             return render(request, 'colors/index.html', {'error': 'You must add an image.', 'just_saved_image': just_saved_image})
 
-    # temporarily loop all images in db
-    images = Color.objects
-
-    return render(request, 'colors/index.html', {'images': images, 'just_saved_image': just_saved_image})
+    return render(request, 'colors/index.html', {'just_saved_image': just_saved_image})
