@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block content %} {% if error %}
+{{ error }}
+<br />
+<br />
+{% endif %}
+
+<h1>HOME</h1>
+
+<h2>the filename was {{ filename }}</h2>
+
+<form method="POST" action="{% url 'index' %}" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="input-group mb-3">
+    <div class="custom-file">
+      <input
+        type="file"
+        class="custom-file-input"
+        name="image"
+        id="inputGroupFile01"
+        aria-describedby="inputGroupFileAddon01"
+      />
+      <label class="custom-file-label" for="inputGroupFile01"
+        >Choose file</label
+      >
+    </div>
+  </div>
+  <input class="btn btn-dark" type="submit" value="Submit" />
+</form>
+
+{% endblock %}
