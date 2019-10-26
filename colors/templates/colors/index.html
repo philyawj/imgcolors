@@ -25,7 +25,21 @@
   <input class="btn btn-dark" type="submit" value="Submit" />
 </form>
 
-{% for image in images.all %}
+<!-- {% for image in images.all %}
 <h1>image here</h1>
+<h3>{{ image.id }}</h3>
 <img class="img-fluid" width="800" src={{ image.image.url }}></img>
-{% endfor %} {% endblock %}
+{% endfor %}  -->
+
+{% if just_saved_image %}
+<p>yo, you just saved an image!</p>
+<p>image id: {{ just_saved_image.id }}</p>
+<img
+  class="img-fluid"
+  width="800"
+  src="{{ just_saved_image.image.url }}"
+  alt=""
+/>
+{% else %}
+<p>no image set</p>
+{% endif %} {% endblock %}
