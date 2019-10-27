@@ -19,10 +19,8 @@ def index(request):
     if request.method == 'POST':
         # if file exists: process it and save to db
         if request.FILES:
-
             # calc file size in kb
-            filesize = len(request.FILES['image'])
-            filesizek = filesize / 1000
+            filesizek = len(request.FILES['image']) / 1000
 
             # prevent images that are too small or too large
             if filesizek >= 2001:
@@ -41,7 +39,7 @@ def index(request):
                 # get number of colors from form select
                 number_of_colors = request.POST['numberOfColors']
 
-                # convert number of colors to int
+                # convert number of colors from string to int
                 num_clusters = int(number_of_colors)
                 # split image percentage to equal 100%
                 equal_percent = (100/num_clusters)/100
@@ -54,6 +52,8 @@ def index(request):
 
                 # get image path and trim first /
                 path = just_saved_image.image.url[1:]
+
+                # cv2 read image from db
                 img = cv2.imread(path)
 
                 # fail with error if cv2 determines not a valid image
@@ -76,10 +76,12 @@ def index(request):
                     else:
                         scale_percent = 100
 
+                    # use the downsize scale to get new width and height
                     width = int(img.shape[1] * scale_percent / 100)
                     height = int(img.shape[0] * scale_percent / 100)
                     dim = (width, height)
-                    # resize image
+
+                    # img is resaved as downsized image before analysis
                     img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
 
                     # read image and convert to RGB
@@ -95,6 +97,7 @@ def index(request):
                     # create a figure representing the % of pixels labeled to each color
                     hist = centroid_histogram(clt)
                     rgb_colors = clt.cluster_centers_
+
                     # set to ints for hexes
                     rgb_ints = rgb_colors.astype(int)
                     rgb_list = list(rgb_ints)
@@ -104,9 +107,9 @@ def index(request):
 
                     rgb_dict = {}
                     # loop through and add key value to dict for later sorting
+                    # combines them into an unsorted dictionary as key value pairs
                     for r, p in zip(rgb_list, s):
                         rgb_dict[p] = r
-                    # combines them into an unsorted dictionary as key value pairs
 
                     # assign key(percentages) values(rgb) in order
                     sorted_rgb_list = []
@@ -116,6 +119,7 @@ def index(request):
                     sorted_rgb_list_formatted = np.array(sorted_rgb_list)
 
                     # passing in equal_hist makes contents evenly space
+                    # sorted list ensures most dominant to least dominant left to right
                     output_equal = plot_colors(
                         equal_hist, sorted_rgb_list_formatted)
 
@@ -145,7 +149,7 @@ def index(request):
                     for key in sorted(hexes_dict, reverse=True):
                         hexes_sorted_list.append(hexes_dict[key])
 
-                    # return back to homepage and display the img/output/hexes
+                    # Success: return back to page and display the original/palette/hexes
 
         # if file doesn't exist: return error message
         else:
