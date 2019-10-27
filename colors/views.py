@@ -15,6 +15,7 @@ def index(request):
     just_saved_image = None
     error = None
     number_of_colors = None
+    just_saved_output = None
 
     if request.method == 'POST':
         # if file exists: process it and save to db
@@ -123,19 +124,18 @@ def index(request):
                         print('the image height is larger than the width')
                     # TODO use css to set max width/max height when it displays image
 
-                    # analyze the colors
-                    # save an img file
-                    # calculate the hex values + front end show circles
-                    # return back to homepage and display the img and hexes
+                    just_saved_output = '/media/outputs/output-equal.png'
+
+                    # TODO calculate the hex values + front end show circles
+
+                    # return back to homepage and display the img/output/hexes
 
         # if file doesn't exist: return error message
         else:
             error = 'You must add an image'
             return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image})
 
-    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors})
-
-# determine the % of each color to later sort by
+    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors, 'just_saved_output': just_saved_output})
 
 
 def centroid_histogram(clt):

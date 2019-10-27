@@ -39,12 +39,24 @@
 <p>image name: {{ just_saved_image.filename }}</p>
 <p>image created_at: {{ just_saved_image.created_at }}</p>
 <p>number of colors: {{ number_of_colors }}</p>
-<img
-  class="img-fluid"
-  width="800"
-  src="{{ just_saved_image.image.url }}"
-  alt=""
-/>
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+      <h2>original image:</h2>
+      <img
+        class="img-fluid"
+        width="400"
+        src="{{ just_saved_image.image.url }}"
+        alt=""
+      />
+    </div>
+    <div class="col-6">
+      <h2>color output:</h2>
+      <img class="img-fluid" width="400" src="{{ just_saved_output }}" alt="" />
+    </div>
+  </div>
+</div>
+
 {% else %}
 <p>no image set</p>
 {% endif %} {% endblock %}
