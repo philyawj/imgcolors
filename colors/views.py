@@ -138,7 +138,7 @@ def index(request):
 
                     # loop through and add key value to dict for later sorting
                     for r, p in zip(rgb_list, s):
-                        hexes_dict[p] = rgb_to_hex(r)
+                        hexes_dict[p] = rgb_to_hex(r).upper()
 
                     # add hexes to new list in order
                     for key in sorted(hexes_dict, reverse=True):

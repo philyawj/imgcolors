@@ -54,33 +54,35 @@
 
     {% if just_saved_image %}
 
-    <div class="row">
-      <div class="col-4">
-        <h2>original image:</h2>
+    <div class="row mt-3">
+      <div class="col-sm-12 col-md-4">
+        <h3>Original:</h3>
         <img
           class="img-fluid"
-          width="400"
+          width="600"
           src="{{ just_saved_image.image.url }}"
           alt=""
         />
       </div>
-      <div class="col-4">
-        <h2>color output:</h2>
+      <div class="col-sm-12 col-md-4">
+        <h3>Palette:</h3>
         <img
           class="img-fluid"
-          width="400"
+          width="600"
           src="{{ just_saved_output }}"
           alt=""
         />
       </div>
-      <div class="col-4">
-        <h2>hexes:</h2>
+      <div class="col-sm-12 col-md-4">
+        <h3>Hexes:</h3>
         {% for hex in hexes_sorted_list %}
-        <div
-          style="background-color: {{ hex }}; height: 40px; width: 40px;"
-          class="rounded-circle"
-        ></div>
-        <p>{{ hex }}</p>
+        <div class="d-flex align-items-center mb-3">
+          <div
+            style="background-color: {{ hex }}; height: 40px; width: 40px;"
+            class="rounded-circle"
+          ></div>
+          <div class="ml-2">{{ hex }}</div>
+        </div>
         {% endfor %}
       </div>
     </div>
