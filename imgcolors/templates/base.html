@@ -50,6 +50,19 @@
         $("#image-form").submit(function() {
           // disabled submit button on form submit to prevent multiple submits
           $("#submit-btn").attr("disabled", "disabled");
+
+          let btnLoading = `<button class="btn btn-dark" type="button" disabled>
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Extracting colors...
+              </button>`;
+
+          console.log(btnLoading);
+
+          $("#submit-btn").replaceWith(btnLoading);
         });
       });
     </script>

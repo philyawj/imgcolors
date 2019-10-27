@@ -144,7 +144,6 @@ def index(request):
                     for key in sorted(hexes_dict, reverse=True):
                         hexes_sorted_list.append(hexes_dict[key])
 
-                    # TODO show loady while it processes
                     # TODO possibly make the image half the size and run the analysis on that for faster load
                     # could have a few versions where sized down by percentage based on size
 
