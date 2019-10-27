@@ -8,7 +8,8 @@
 
 <form method="POST" action="{% url 'index' %}" enctype="multipart/form-data">
   {% csrf_token %}
-  <div class="input-group mb-3">
+  <div class="form-group">
+    <label for="imageInput">Image:</label>
     <div class="custom-file">
       <input
         type="file"
@@ -20,6 +21,16 @@
       <label class="custom-file-label" for="imageInput">Choose file</label>
     </div>
   </div>
+  <div class="form-group">
+    <label for="numberOfColors">Number of Colors:</label>
+    <select class="form-control" id="numberOfColors" name="numberOfColors">
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option selected value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+    </select>
+  </div>
   <input class="btn btn-dark" type="submit" value="Submit" />
 </form>
 
@@ -27,6 +38,7 @@
 <p>image id: {{ just_saved_image.id }}</p>
 <p>image name: {{ just_saved_image.filename }}</p>
 <p>image created_at: {{ just_saved_image.created_at }}</p>
+<p>number of colors: {{ number_of_colors }}</p>
 <img
   class="img-fluid"
   width="800"

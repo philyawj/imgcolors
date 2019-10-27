@@ -35,6 +35,9 @@ def index(request):
                 # save object to db
                 image.save()
 
+                number_of_colors = request.POST['numberOfColors']
+                print(number_of_colors)
+
                 # create object queried from id of just saved image
                 just_saved_image = Color.objects.get(pk=image.id)
 
@@ -70,4 +73,4 @@ def index(request):
             error = 'You must add an image'
             return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image})
 
-    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image})
+    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors})
