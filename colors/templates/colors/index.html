@@ -19,6 +19,7 @@
       method="POST"
       action="{% url 'index' %}"
       enctype="multipart/form-data"
+      class="mb-3"
     >
       {% csrf_token %}
       <div class="form-group">
@@ -61,7 +62,7 @@
           class="img-fluid"
           width="600"
           src="{{ just_saved_image.image.url }}"
-          alt=""
+          alt="Original Image"
         />
       </div>
       <div class="col-sm-12 col-md-4 mb-3">
@@ -70,7 +71,7 @@
           class="img-fluid"
           width="600"
           src="{{ just_saved_output }}"
-          alt=""
+          alt="Color Palette"
         />
       </div>
       <div class="col-sm-12 col-md-4 mb-3">

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from .models import Color
 from django.utils import timezone
 import numpy as np
@@ -25,8 +25,8 @@ def index(request):
             filesizek = filesize / 1000
 
             # prevent images that are too small or too large
-            if filesizek >= 500:
-                error = 'Images must be smaller than 500k'
+            if filesizek >= 2001:
+                error = 'Images must be smaller than 2mb'
             elif filesizek <= 10:
                 error = 'Images must be larger than 10k'
             # continue processing since image size is valid
@@ -38,6 +38,7 @@ def index(request):
                 # save object to db
                 image.save()
 
+                # get number of colors from form select
                 number_of_colors = request.POST['numberOfColors']
 
                 # convert number of colors to int
@@ -53,8 +54,6 @@ def index(request):
 
                 # get image path and trim first /
                 path = just_saved_image.image.url[1:]
-
-                # get image width and height
                 img = cv2.imread(path)
 
                 # fail with error if cv2 determines not a valid image
@@ -63,6 +62,37 @@ def index(request):
                     return render(request, 'colors/index.html', {'error': error})
                 # continue if image is valid image file type
                 else:
+                    # TODO if image is large, downsize the image that is analyzed for much faster load
+                    height, width = img.shape[:2]
+                    print('ORIGINAL SIZE')
+                    print(height)
+                    print(width)
+                    if filesizek >= 1500:
+                        scale_percent = 5  # percent of original size
+                    if filesizek >= 1000:
+                        scale_percent = 13  # percent of original size
+                    elif filesizek >= 500:
+                        scale_percent = 25  # percent of original size
+                    elif filesizek >= 100:
+                        scale_percent = 33  # percent of original size
+                    elif filesizek >= 50:
+                        scale_percent = 45  # percent of original size
+                    else:
+                        scale_percent = 100
+
+                    width = int(img.shape[1] * scale_percent / 100)
+                    height = int(img.shape[0] * scale_percent / 100)
+                    dim = (width, height)
+                    # resize image
+                    img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+
+                    height, width = img.shape[:2]
+                    print('Scale percent')
+                    print(scale_percent)
+                    print('RESIZED BELOW')
+                    print(height)
+                    print(width)
+
                     # read image and convert to RGB
                     image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -76,9 +106,9 @@ def index(request):
                     # create a figure representing the % of pixels labeled to each color
                     hist = centroid_histogram(clt)
                     rgb_colors = clt.cluster_centers_
+                    # set to ints for hexes
                     rgb_ints = rgb_colors.astype(int)
                     rgb_list = list(rgb_ints)
-                    print(rgb_ints)
 
                     s = hist.tolist()
                     # adds commas and puts into list
@@ -91,43 +121,25 @@ def index(request):
 
                     # assign key(percentages) values(rgb) in order
                     sorted_rgb_list = []
-
                     for key in sorted(rgb_dict, reverse=True):
                         sorted_rgb_list.append(rgb_dict[key])
 
                     sorted_rgb_list_formatted = np.array(sorted_rgb_list)
 
-                    sorted_hist = sorted(hist, reverse=True)
-
                     # passing in equal_hist makes contents evenly space
                     output_equal = plot_colors(
                         equal_hist, sorted_rgb_list_formatted)
-
-                    # 2nd version with weighted spacing
-                    output_weighted = plot_colors(
-                        sorted_hist, sorted_rgb_list_formatted)
 
                     # check if outputs folder exists. create it if not
                     if not os.path.exists('media/outputs'):
                         os.makedirs('media/outputs')
                     # save as image
-                    plt.imsave("media/outputs/output-equal.png", output_equal)
-                    plt.imsave("media/outputs/output-weighted.png",
-                               output_weighted)
+                    plt.imsave("media/outputs/color-palette.png", output_equal)
 
-                    height, width = img.shape[:2]
-                    print(height)
-                    print(width)
+                    # set path to palette for front end
+                    just_saved_output = '/media/outputs/color-palette.png'
 
-                    if width > height:
-                        print('the image width is larger than the height')
-                    else:
-                        print('the image height is larger than the width')
-                    # TODO use css to set max width/max height when it displays image
-
-                    just_saved_output = '/media/outputs/output-equal.png'
-
-                    # calculate the HEX values + front end show circles
+                    # calculate the HEX values to display on front end with circles
                     hexes = []
                     hexes_dict = {}
                     hexes_sorted_list = []
@@ -143,9 +155,6 @@ def index(request):
                     # add hexes to new list in order
                     for key in sorted(hexes_dict, reverse=True):
                         hexes_sorted_list.append(hexes_dict[key])
-
-                    # TODO possibly make the image half the size and run the analysis on that for faster load
-                    # could have a few versions where sized down by percentage based on size
 
                     # return back to homepage and display the img/output/hexes
 
