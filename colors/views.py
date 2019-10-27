@@ -14,6 +14,7 @@ def index(request):
     error = None
     number_of_colors = None
     just_saved_output = None
+    hexes_list = None
 
     if request.method == 'POST':
         # if file exists: process it and save to db
@@ -146,15 +147,16 @@ def index(request):
                     for key in sorted(hexesdict, reverse=True):
                         print("%s: %s" % (key, hexesdict[key]))
 
-                    hexeslist = []
+                    hexes_list = []
 
                     print('----JUST HEXES IN ORDER-----')
                     for key in sorted(hexesdict, reverse=True):
-                        hexeslist.append(hexesdict[key])
-                    print(hexeslist)
+                        hexes_list.append(hexesdict[key])
+                    print(hexes_list)
 
                     # TODO javascript prevent double submits by making button disabled. show loady while it processes
                     # TODO possibly make the image half the size and run the analysis on that for faster load
+                    # could have a few versions where sized down by percentage based on size
 
                     # return back to homepage and display the img/output/hexes
 
@@ -163,7 +165,7 @@ def index(request):
             error = 'You must add an image'
             return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image})
 
-    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors, 'just_saved_output': just_saved_output})
+    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors, 'just_saved_output': just_saved_output, 'hexes_list': hexes_list})
 
 
 def centroid_histogram(clt):
@@ -178,8 +180,6 @@ def centroid_histogram(clt):
 
     # return the histogram
     return hist
-
-# plot image - hist arg is already ordered by most dominant to least dominant
 
 
 def plot_colors(hist, centroids):

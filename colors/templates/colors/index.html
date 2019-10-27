@@ -41,7 +41,7 @@
 <p>number of colors: {{ number_of_colors }}</p>
 <div class="container">
   <div class="row">
-    <div class="col-6">
+    <div class="col-4">
       <h2>original image:</h2>
       <img
         class="img-fluid"
@@ -50,9 +50,19 @@
         alt=""
       />
     </div>
-    <div class="col-6">
+    <div class="col-4">
       <h2>color output:</h2>
       <img class="img-fluid" width="400" src="{{ just_saved_output }}" alt="" />
+    </div>
+    <div class="col-4">
+      <h2>hexes:</h2>
+      {% for hex in hexes_list %}
+      <div
+        style="background-color: {{ hex }}; height: 40px; width: 40px;"
+        class="rounded-circle"
+      ></div>
+      <p>{{ hex }}</p>
+      {% endfor %}
     </div>
   </div>
 </div>
