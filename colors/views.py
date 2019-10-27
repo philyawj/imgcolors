@@ -27,8 +27,8 @@ def index(request):
             # prevent images that are too small or too large
             if filesizek >= 2001:
                 error = 'Images must be smaller than 2mb'
-            elif filesizek <= 10:
-                error = 'Images must be larger than 10k'
+            elif filesizek <= 5:
+                error = 'Images must be larger than 5k'
             # continue processing since image size is valid
             else:
                 # create object
@@ -62,21 +62,17 @@ def index(request):
                     return render(request, 'colors/index.html', {'error': error})
                 # continue if image is valid image file type
                 else:
-                    # TODO if image is large, downsize the image that is analyzed for much faster load
-                    height, width = img.shape[:2]
-                    print('ORIGINAL SIZE')
-                    print(height)
-                    print(width)
+                    # if image is large, downsize the image that is analyzed for much faster load - gets to about 250x250
                     if filesizek >= 1500:
                         scale_percent = 5  # percent of original size
                     if filesizek >= 1000:
-                        scale_percent = 13  # percent of original size
+                        scale_percent = 13
                     elif filesizek >= 500:
-                        scale_percent = 25  # percent of original size
+                        scale_percent = 25
                     elif filesizek >= 100:
-                        scale_percent = 33  # percent of original size
+                        scale_percent = 33
                     elif filesizek >= 50:
-                        scale_percent = 45  # percent of original size
+                        scale_percent = 45
                     else:
                         scale_percent = 100
 
@@ -85,13 +81,6 @@ def index(request):
                     dim = (width, height)
                     # resize image
                     img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
-
-                    height, width = img.shape[:2]
-                    print('Scale percent')
-                    print(scale_percent)
-                    print('RESIZED BELOW')
-                    print(height)
-                    print(width)
 
                     # read image and convert to RGB
                     image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
