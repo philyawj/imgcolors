@@ -25,6 +25,8 @@ def index(request):
 
             if filesizek >= 500:
                 error = 'Images must be smaller than 500k'
+            elif filesizek <= 10:
+                error = 'Images must be larger than 10k'
             else:
                 image = Color()
                 image.image = request.FILES['image']
@@ -40,36 +42,40 @@ def index(request):
 
                 # get image width and height -- 0 flag is grayscale
                 img = cv2.imread(path, 0)
-                print(img)
-                height, width = img.shape[:2]
-                print(height)
-                print(width)
 
-                if width > height:
-                    print('the image width is larger than the height')
+                if img is None:
+                    error = 'Image must be a png jpg or jpeg'
+                    return render(request, 'colors/index.html', {'error': error})
                 else:
-                    print('the image height is larger than the width')
+                    height, width = img.shape[:2]
+                    print(height)
+                    print(width)
 
-                # TODO resize a thumbnail to a smaller image
-                # if image size is greater than 500k, downsize it by 50%
-                if filesizek > 500:
-                    scale_percent = 50  # percent of original size
-                    width = int(img.shape[1] * scale_percent / 100)
-                    height = int(img.shape[0] * scale_percent / 100)
-                    dim = (width, height)
+                    if width > height:
+                        print('the image width is larger than the height')
+                    else:
+                        print('the image height is larger than the width')
 
-                    # resize image
-                    resized = cv2.resize(
-                        img, dim, interpolation=cv2.INTER_AREA)
-                    rheight, rwidth = resized.shape[:2]
-                    print('Resized Dimensions : ', resized.shape)
-                    print('Resized Width : ', rwidth)
-                    print('Resized Height : ', rheight)
+                    # TODO resize a thumbnail to a smaller image
+                    # if image size is greater than 500k, downsize it by 50%
+                    if filesizek > 500:
+                        scale_percent = 50  # percent of original size
+                        width = int(img.shape[1] * scale_percent / 100)
+                        height = int(img.shape[0] * scale_percent / 100)
+                        dim = (width, height)
 
-                # analyze the colors
-                # save an img file
-                # calculate the hex values + front end show circles
-                # return back to homepage and display the img and hexes
+                        # resize image
+                        resized = cv2.resize(
+                            img, dim, interpolation=cv2.INTER_AREA)
+                        rheight, rwidth = resized.shape[:2]
+                        print('Resized Dimensions : ', resized.shape)
+                        print('Resized Width : ', rwidth)
+                        print('Resized Height : ', rheight)
+
+                    # analyze the colors
+                    # save an img file
+                    # calculate the hex values + front end show circles
+                    # return back to homepage and display the img and hexes
 
         # if file doesn't exist: return error message
         else:
