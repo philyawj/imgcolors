@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="description" content="" />
-    <title>Img Colors</title>
+    <title>Colors From Image</title>
 
     <!-- Bootstrap core CSS -->
     <link
@@ -18,13 +18,22 @@
     />
   </head>
   <body>
-    <div class="container">
+    <div class="container mt-5">
       {% block content %} {% endblock %}
     </div>
 
-    <footer class="text-muted">
-      <div class="container text-center">
-        <p>Footer</p>
+    <footer class="text-muted mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12 text-center">
+            <p>
+              Created by
+              <a class="text-info" href="https://www.jordanphilyaw.com"
+                >Jordan Philyaw</a
+              >
+            </p>
+          </div>
+        </div>
       </div>
     </footer>
     <script
@@ -59,8 +68,6 @@
                 ></span>
                 Extracting colors...
               </button>`;
-
-          console.log(btnLoading);
 
           $("#submit-btn").replaceWith(btnLoading);
         });
