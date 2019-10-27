@@ -17,3 +17,5 @@ python manage.py startapp colors
 pip install Pillow
 
 pip install opencv-python
+
+pip install spicy matplotlib scikit-learn

@@ -4,6 +4,8 @@ from django.utils import timezone
 import numpy as np
 import cv2
 import os
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 
 def index(request):
@@ -12,6 +14,7 @@ def index(request):
     # default just_saved_image and error to empty
     just_saved_image = None
     error = None
+    number_of_colors = None
 
     if request.method == 'POST':
         # if file exists: process it and save to db
@@ -36,7 +39,14 @@ def index(request):
                 image.save()
 
                 number_of_colors = request.POST['numberOfColors']
-                print(number_of_colors)
+
+                # convert number of colors to int
+                num_clusters = int(number_of_colors)
+                # split image percentage to equal 100%
+                equal_percent = (100/num_clusters)/100
+                equal_hist = np.zeros(num_clusters)
+                equal_hist = equal_hist.astype("float")
+                equal_hist[:] = equal_percent
 
                 # create object queried from id of just saved image
                 just_saved_image = Color.objects.get(pk=image.id)
@@ -44,8 +54,8 @@ def index(request):
                 # get image path and trim first /
                 path = just_saved_image.image.url[1:]
 
-                # get image width and height -- 0 flag is grayscale
-                img = cv2.imread(path, 0)
+                # get image width and height
+                img = cv2.imread(path)
 
                 # fail with error if cv2 determines not a valid image
                 if img is None:
@@ -53,6 +63,56 @@ def index(request):
                     return render(request, 'colors/index.html', {'error': error})
                 # continue if image is valid image file type
                 else:
+                    # read image and convert to RGB
+                    image = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+                    # reshape the image to be a list of pixels
+                    image = image.reshape((image.shape[0] * image.shape[1], 3))
+
+                    # cluster the pixel intensities
+                    clt = KMeans(n_clusters=num_clusters)
+                    clt.fit(image)
+
+                    # create a figure representing the % of pixels labeled to each color
+                    hist = centroid_histogram(clt)
+                    rgbcolors = clt.cluster_centers_
+                    rgblist = list(rgbcolors)
+
+                    s = hist.tolist()
+                    # adds commas and puts into list
+
+                    rgbdict = {}
+                    # loop through and add key value to dict for later sorting
+                    for r, p in zip(rgblist, s):
+                        rgbdict[p] = r
+                    # combines them into an unsorted dictionary as key value pairs
+
+                    # assign key(percentages) values(rgb) in order
+                    sorted_rgb_list = []
+
+                    for key in sorted(rgbdict, reverse=True):
+                        sorted_rgb_list.append(rgbdict[key])
+
+                    sorted_rgb_list_formatted = np.array(sorted_rgb_list)
+
+                    sorted_hist = sorted(hist, reverse=True)
+
+                    # passing in equal_hist makes contents evenly space
+                    output_equal = plot_colors(
+                        equal_hist, sorted_rgb_list_formatted)
+
+                    # 2nd version with weighted spacing
+                    output_weighted = plot_colors(
+                        sorted_hist, sorted_rgb_list_formatted)
+
+                    # check if outputs folder exists. create it if not
+                    if not os.path.exists('media/outputs'):
+                        os.makedirs('media/outputs')
+                    # save as image
+                    plt.imsave("media/outputs/output-equal.png", output_equal)
+                    plt.imsave("media/outputs/output-weighted.png",
+                               output_weighted)
+
                     height, width = img.shape[:2]
                     print(height)
                     print(width)
@@ -74,3 +134,40 @@ def index(request):
             return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image})
 
     return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors})
+
+# determine the % of each color to later sort by
+
+
+def centroid_histogram(clt):
+    # grab the number of different clusters and create a histogram
+    # based on the number of pixels assigned to each cluster
+    numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
+    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+
+    # normalize the histogram, such that it sums to one
+    hist = hist.astype("float")
+    hist /= hist.sum()
+
+    # return the histogram
+    return hist
+
+# plot image - hist arg is already ordered by most dominant to least dominant
+
+
+def plot_colors(hist, centroids):
+    # create square image with equal % bars
+    w = 300
+    h = 300
+    bar = np.zeros((w, h, 3), dtype="uint8")
+    startX = 0
+
+    # loop over the equal percentage of each cluster and the color of each cluster
+    for (percent, color) in zip(hist, centroids):
+        # plot the relative percentage of each cluster
+        endX = startX + (percent * 300)
+        cv2.rectangle(bar, (int(startX), 0), (int(endX), 300),
+                      color.astype("uint8").tolist(), -1)
+        startX = endX
+
+    # return the bar chart
+    return bar
