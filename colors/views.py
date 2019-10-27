@@ -9,9 +9,7 @@ import matplotlib.pyplot as plt
 
 
 def index(request):
-    # TODO add an input dropdown between 3-7 with default 5
-
-    # default just_saved_image and error to empty
+    # variable defaults to prevent front end errors
     just_saved_image = None
     error = None
     number_of_colors = None
@@ -77,7 +75,9 @@ def index(request):
                     # create a figure representing the % of pixels labeled to each color
                     hist = centroid_histogram(clt)
                     rgbcolors = clt.cluster_centers_
-                    rgblist = list(rgbcolors)
+                    rgbints = rgbcolors.astype(int)
+                    rgblist = list(rgbints)
+                    print(rgbints)
 
                     s = hist.tolist()
                     # adds commas and puts into list
@@ -126,7 +126,35 @@ def index(request):
 
                     just_saved_output = '/media/outputs/output-equal.png'
 
-                    # TODO calculate the hex values + front end show circles
+                    # TODO calculate the HEX values + front end show circles
+                    hexes = []
+                    hexesdict = {}
+
+                    # loop through and convert to hex
+                    for r in rgblist:
+                        hexes.append(rgb_to_hex(r))
+
+                    # loop through and add key value to dict for later sorting
+                    for r, p in zip(rgblist, s):
+                        hexesdict[p] = rgb_to_hex(r)
+
+                    print('HEXES BELOW')
+                    print(hexes)
+                    print('HEXES DICT BELOW')
+                    print(hexesdict)
+                    print('----SORTED BELOW-----')
+                    for key in sorted(hexesdict, reverse=True):
+                        print("%s: %s" % (key, hexesdict[key]))
+
+                    hexeslist = []
+
+                    print('----JUST HEXES IN ORDER-----')
+                    for key in sorted(hexesdict, reverse=True):
+                        hexeslist.append(hexesdict[key])
+                    print(hexeslist)
+
+                    # TODO javascript prevent double submits by making button disabled. show loady while it processes
+                    # TODO possibly make the image half the size and run the analysis on that for faster load
 
                     # return back to homepage and display the img/output/hexes
 
@@ -171,3 +199,7 @@ def plot_colors(hist, centroids):
 
     # return the bar chart
     return bar
+
+
+def rgb_to_hex(rgb):
+    return '#%s' % ''.join(('%02x' % p for p in rgb))
