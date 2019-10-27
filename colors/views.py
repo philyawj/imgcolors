@@ -14,7 +14,7 @@ def index(request):
     error = None
     number_of_colors = None
     just_saved_output = None
-    hexes_list = None
+    hexes_sorted_list = None
 
     if request.method == 'POST':
         # if file exists: process it and save to db
@@ -75,25 +75,25 @@ def index(request):
 
                     # create a figure representing the % of pixels labeled to each color
                     hist = centroid_histogram(clt)
-                    rgbcolors = clt.cluster_centers_
-                    rgbints = rgbcolors.astype(int)
-                    rgblist = list(rgbints)
-                    print(rgbints)
+                    rgb_colors = clt.cluster_centers_
+                    rgb_ints = rgb_colors.astype(int)
+                    rgb_list = list(rgb_ints)
+                    print(rgb_ints)
 
                     s = hist.tolist()
                     # adds commas and puts into list
 
-                    rgbdict = {}
+                    rgb_dict = {}
                     # loop through and add key value to dict for later sorting
-                    for r, p in zip(rgblist, s):
-                        rgbdict[p] = r
+                    for r, p in zip(rgb_list, s):
+                        rgb_dict[p] = r
                     # combines them into an unsorted dictionary as key value pairs
 
                     # assign key(percentages) values(rgb) in order
                     sorted_rgb_list = []
 
-                    for key in sorted(rgbdict, reverse=True):
-                        sorted_rgb_list.append(rgbdict[key])
+                    for key in sorted(rgb_dict, reverse=True):
+                        sorted_rgb_list.append(rgb_dict[key])
 
                     sorted_rgb_list_formatted = np.array(sorted_rgb_list)
 
@@ -127,32 +127,22 @@ def index(request):
 
                     just_saved_output = '/media/outputs/output-equal.png'
 
-                    # TODO calculate the HEX values + front end show circles
+                    # calculate the HEX values + front end show circles
                     hexes = []
-                    hexesdict = {}
+                    hexes_dict = {}
+                    hexes_sorted_list = []
 
                     # loop through and convert to hex
-                    for r in rgblist:
+                    for r in rgb_list:
                         hexes.append(rgb_to_hex(r))
 
                     # loop through and add key value to dict for later sorting
-                    for r, p in zip(rgblist, s):
-                        hexesdict[p] = rgb_to_hex(r)
+                    for r, p in zip(rgb_list, s):
+                        hexes_dict[p] = rgb_to_hex(r)
 
-                    print('HEXES BELOW')
-                    print(hexes)
-                    print('HEXES DICT BELOW')
-                    print(hexesdict)
-                    print('----SORTED BELOW-----')
-                    for key in sorted(hexesdict, reverse=True):
-                        print("%s: %s" % (key, hexesdict[key]))
-
-                    hexes_list = []
-
-                    print('----JUST HEXES IN ORDER-----')
-                    for key in sorted(hexesdict, reverse=True):
-                        hexes_list.append(hexesdict[key])
-                    print(hexes_list)
+                    # add hexes to new list in order
+                    for key in sorted(hexes_dict, reverse=True):
+                        hexes_sorted_list.append(hexes_dict[key])
 
                     # TODO javascript prevent double submits by making button disabled. show loady while it processes
                     # TODO possibly make the image half the size and run the analysis on that for faster load
@@ -165,14 +155,14 @@ def index(request):
             error = 'You must add an image'
             return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image})
 
-    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors, 'just_saved_output': just_saved_output, 'hexes_list': hexes_list})
+    return render(request, 'colors/index.html', {'error': error, 'just_saved_image': just_saved_image, 'number_of_colors': number_of_colors, 'just_saved_output': just_saved_output, 'hexes_sorted_list': hexes_sorted_list})
 
 
 def centroid_histogram(clt):
     # grab the number of different clusters and create a histogram
     # based on the number of pixels assigned to each cluster
-    numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
-    (hist, _) = np.histogram(clt.labels_, bins=numLabels)
+    num_labels = np.arange(0, len(np.unique(clt.labels_)) + 1)
+    (hist, _) = np.histogram(clt.labels_, bins=num_labels)
 
     # normalize the histogram, such that it sums to one
     hist = hist.astype("float")
