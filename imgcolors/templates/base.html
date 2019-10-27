@@ -46,6 +46,11 @@
     <script>
       $(document).ready(function() {
         bsCustomFileInput.init();
+
+        $("#image-form").submit(function() {
+          // disabled submit button on form submit to prevent multiple submits
+          $("#submit-btn").attr("disabled", "disabled");
+        });
       });
     </script>
   </body>
